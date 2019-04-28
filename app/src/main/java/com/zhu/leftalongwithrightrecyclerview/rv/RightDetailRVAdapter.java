@@ -3,6 +3,7 @@ package com.zhu.leftalongwithrightrecyclerview.rv;
 import android.graphics.Color;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
+import com.zhu.leftalongwithrightrecyclerview.R;
 
 public class RightDetailRVAdapter extends BaseQuickAdapter<RightMenuBean, TextViewHolder> {
 
@@ -12,6 +13,11 @@ public class RightDetailRVAdapter extends BaseQuickAdapter<RightMenuBean, TextVi
 
     @Override
     protected void convert(TextViewHolder helper, RightMenuBean item) {
+        if (item.isTitle()) {
+            helper.setTextColor(R.id.tv_menu, Color.parseColor("#FF00BCD4"));
+        }else {
+            helper.setTextColor(R.id.tv_menu, Color.parseColor("#000000"));
+        }
         helper.setMenuData(item.getName());
     }
 }
