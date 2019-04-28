@@ -14,14 +14,6 @@ public class RightMenuBean {
         this.name = name;
     }
 
-    public String getTitleName() {
-        return titleName;
-    }
-
-    public void setTitleName(String titleName) {
-        this.titleName = titleName;
-    }
-
     public boolean isTitle() {
         return isTitle;
     }

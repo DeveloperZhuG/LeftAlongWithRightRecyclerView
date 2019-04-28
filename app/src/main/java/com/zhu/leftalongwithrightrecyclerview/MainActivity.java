@@ -35,6 +35,7 @@ public class MainActivity extends AppCompatActivity {
         String assetsData = getAssetsData("sort.json");
         Gson gson = new Gson();
         HttpResponseBean responseBean = gson.fromJson(assetsData, HttpResponseBean.class);
+
         mDoubleLinkedRecylcerView.setData(responseBean);
     }
 
