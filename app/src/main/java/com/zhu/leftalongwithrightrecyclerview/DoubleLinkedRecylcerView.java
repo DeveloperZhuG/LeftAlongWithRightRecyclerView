@@ -23,10 +23,11 @@ public class DoubleLinkedRecylcerView extends LinearLayout {
 
     private Context mContext;
 
-    private RecyclerView mRecyclerViewLeft;
-    private RecyclerView mRecyclerViewRight;
-    private RecyclerViewAdapter mLeftAdapter;
-    private RightDetailRVAdapter mRightAdapter;
+    private RecyclerView mRecyclerViewHost;
+    private RecyclerView mRecyclerViewSub;
+    private RecyclerViewAdapter mHostAdapter;
+    private RightDetailRVAdapter mSubAdapter;
+    private LinearLayoutManager mLinearLayoutManagerSub;
 
     public DoubleLinkedRecylcerView(Context context) {
         super(context);
@@ -60,28 +61,32 @@ public class DoubleLinkedRecylcerView extends LinearLayout {
     }
 
     private void initSubRecyclerView() {
-        mRecyclerViewRight = findViewById(R.id.rv_right);
-        mRightAdapter = new RightDetailRVAdapter(R.layout.rv_item);
-        mRecyclerViewRight.setAdapter(mRightAdapter);
-        LinearLayoutManager linearLayoutManagerRight = new LinearLayoutManager(mContext);
-        mRecyclerViewRight.setLayoutManager(linearLayoutManagerRight);
+        mRecyclerViewSub = findViewById(R.id.rv_right);
+        mSubAdapter = new RightDetailRVAdapter(R.layout.rv_item);
+        mRecyclerViewSub.setAdapter(mSubAdapter);
+        mLinearLayoutManagerSub = new LinearLayoutManager(mContext);
+        mRecyclerViewSub.setLayoutManager(mLinearLayoutManagerSub);
     }
 
     private void initHostRecyclerView() {
-        mRecyclerViewLeft = findViewById(R.id.rv_left);
-        mLeftAdapter = new RecyclerViewAdapter(R.layout.rv_item);
-        mRecyclerViewLeft.setAdapter(mLeftAdapter);
+        mRecyclerViewHost = findViewById(R.id.rv_left);
+        mHostAdapter = new RecyclerViewAdapter(R.layout.rv_item, this);
+        mRecyclerViewHost.setAdapter(mHostAdapter);
         LinearLayoutManager linearLayoutManagerLeft = new LinearLayoutManager(mContext);
-        mRecyclerViewLeft.setLayoutManager(linearLayoutManagerLeft);
+        mRecyclerViewHost.setLayoutManager(linearLayoutManagerLeft);
     }
 
 
+    private HttpResponseBean mHttpResponseBean;
+
     public void setData(HttpResponseBean responseBean) {
+        mHttpResponseBean = responseBean;
+
         List<String> leftMenus = getHostMenuData(responseBean);
-        mLeftAdapter.setNewData(leftMenus);
+        mHostAdapter.setNewData(leftMenus);
 
         List<RightMenuBean> subMenuBean = getSubMenuBean(responseBean);
-        mRightAdapter.setNewData(subMenuBean);
+        mSubAdapter.setNewData(subMenuBean);
     }
 
     @NotNull
@@ -111,5 +116,31 @@ public class DoubleLinkedRecylcerView extends LinearLayout {
             }
         }
         return subMenuBeans;
+    }
+
+
+    public void scrollSubMenu(int position) {
+        int count = 0;
+        for (int i = 0; i < position; i++) {
+            count += mHttpResponseBean.getCategoryOneArray().get(i).getCategoryTwoArray().size();
+        }
+        count += position;
+
+        mRecyclerViewSub.stopScroll();
+        smoothMoveToPosition(count);
+    }
+
+
+    private void smoothMoveToPosition(int n) {
+        int firstItem = mLinearLayoutManagerSub.findFirstVisibleItemPosition();
+        int lastItem = mLinearLayoutManagerSub.findLastVisibleItemPosition();
+        if (n <= firstItem) {
+            mRecyclerViewSub.scrollToPosition(n);
+        } else if (n <= lastItem) {
+            int top = mRecyclerViewSub.getChildAt(n - firstItem).getTop();
+            mRecyclerViewSub.scrollBy(0, top);
+        } else {
+            mRecyclerViewSub.scrollToPosition(n);
+        }
     }
 }
