@@ -1,10 +1,12 @@
 package com.zhu.leftalongwithrightrecyclerview;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.LinearLayout;
@@ -27,6 +29,10 @@ public class DoubleLinkedRecyclerView extends LinearLayout {
     private Context mContext;
 
     private HttpResponseBean mHttpResponseBean;
+
+    private boolean mIsRvHostMoving = false;
+
+    private int mRvSubCountMoving = 0;
 
     private RecyclerView mRecyclerViewHost;
     private RecyclerView mRecyclerViewSub;
@@ -72,6 +78,33 @@ public class DoubleLinkedRecyclerView extends LinearLayout {
         mRecyclerViewSub.setAdapter(mSubAdapter);
         mSubGridLayoutManagerSub = new GridLayoutManager(mContext, 1);
         mRecyclerViewSub.setLayoutManager(mSubGridLayoutManagerSub);
+        mRecyclerViewSub.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+                if (mIsRvHostMoving && newState == RecyclerView.SCROLL_STATE_IDLE) {
+                    mIsRvHostMoving = false;
+                    int n = mRvSubCountMoving - mSubGridLayoutManagerSub.findFirstVisibleItemPosition();
+                    if (0 <= n && n < mRecyclerViewSub.getChildCount()) {
+                        int top = mRecyclerViewSub.getChildAt(n).getTop();
+                        mRecyclerViewSub.smoothScrollBy(0, top);
+                    }
+                }
+            }
+
+            @Override
+            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                if (mIsRvHostMoving) {
+                    mIsRvHostMoving = false;
+                    int n = mRvSubCountMoving - mSubGridLayoutManagerSub.findFirstVisibleItemPosition();
+                    if (0 <= n && n < mRecyclerViewSub.getChildCount()) {
+                        int top = mRecyclerViewSub.getChildAt(n).getTop();
+                        mRecyclerViewSub.scrollBy(0, top);
+                    }
+                }
+            }
+        });
     }
 
     private void initHostRecyclerView() {
@@ -94,7 +127,8 @@ public class DoubleLinkedRecyclerView extends LinearLayout {
         mHostAdapter.setCheckedPosition(position);
         mHostAdapter.notifyDataSetChanged();
 
-        scrollSubMenu(getCountMoving(position));
+        mRvSubCountMoving = getCountMoving(position);
+        scrollSubMenu(mRvSubCountMoving);
 
         moveToCenter(position);
     }
@@ -158,6 +192,7 @@ public class DoubleLinkedRecyclerView extends LinearLayout {
 
 
     public void scrollSubMenu(int position) {
+        mRvSubCountMoving = position;
         mRecyclerViewSub.stopScroll();
         smoothMoveSubRvToPosition(position);
     }
@@ -173,6 +208,7 @@ public class DoubleLinkedRecyclerView extends LinearLayout {
             mRecyclerViewSub.scrollBy(0, top);
         } else {
             mRecyclerViewSub.scrollToPosition(n);
+            mIsRvHostMoving = true;
         }
     }
 }
