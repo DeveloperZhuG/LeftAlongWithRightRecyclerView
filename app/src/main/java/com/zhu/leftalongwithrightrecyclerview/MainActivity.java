@@ -5,17 +5,14 @@ import android.os.Bundle;
 import android.util.Log;
 
 import com.google.gson.Gson;
-import com.zhu.leftalongwithrightrecyclerview.httpbean.HostMenuBean;
 import com.zhu.leftalongwithrightrecyclerview.httpbean.HttpResponseBean;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
-    private DoubleLinkedRecylcerView mDoubleLinkedRecylcerView;
+    private DoubleLinkedRecyclerView mDoubleLinkedRecylcerView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

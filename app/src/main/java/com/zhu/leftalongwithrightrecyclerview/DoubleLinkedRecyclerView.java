@@ -22,7 +22,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DoubleLinkedRecylcerView extends LinearLayout {
+public class DoubleLinkedRecyclerView extends LinearLayout {
 
     private Context mContext;
 
@@ -33,25 +33,25 @@ public class DoubleLinkedRecylcerView extends LinearLayout {
     private GridLayoutManager mSubGridLayoutManagerSub;
     private LinearLayoutManager mHostLinearLayoutManager;
 
-    public DoubleLinkedRecylcerView(Context context) {
+    public DoubleLinkedRecyclerView(Context context) {
         super(context);
         mContext = context;
         init();
     }
 
-    public DoubleLinkedRecylcerView(Context context, AttributeSet attrs) {
+    public DoubleLinkedRecyclerView(Context context, AttributeSet attrs) {
         this(context, attrs, 0);
         mContext = context;
         init();
     }
 
-    public DoubleLinkedRecylcerView(Context context, AttributeSet attrs, int defStyleAttr) {
+    public DoubleLinkedRecyclerView(Context context, AttributeSet attrs, int defStyleAttr) {
         this(context, attrs, defStyleAttr, 0);
         mContext = context;
         init();
     }
 
-    public DoubleLinkedRecylcerView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
+    public DoubleLinkedRecyclerView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
         mContext = context;
         init();
