@@ -78,7 +78,7 @@ public class DoubleLinkedRecyclerView extends LinearLayout {
             @Override
             public void onSelected(int position) {
                 if (mRecyclerViewSub != null) {
-                    setChecked(position);
+                    setHostMenuItemChecked(position);
                 }
             }
         });
@@ -88,10 +88,12 @@ public class DoubleLinkedRecyclerView extends LinearLayout {
     }
 
 
-    private void setChecked(int position) {
+    private void setHostMenuItemChecked(int position) {
         mHostAdapter.setCheckedPosition(position);
         mHostAdapter.notifyDataSetChanged();
+
         scrollSubMenu(getCountMoving(position));
+
         moveToCenter(position);
     }
 
@@ -157,11 +159,11 @@ public class DoubleLinkedRecyclerView extends LinearLayout {
 
     public void scrollSubMenu(int position) {
         mRecyclerViewSub.stopScroll();
-        smoothMoveToPosition(position);
+        smoothMoveSubRvToPosition(position);
     }
 
 
-    private void smoothMoveToPosition(int n) {
+    private void smoothMoveSubRvToPosition(int n) {
         int firstItem = mSubGridLayoutManagerSub.findFirstVisibleItemPosition();
         int lastItem = mSubGridLayoutManagerSub.findLastVisibleItemPosition();
         if (n <= firstItem) {
