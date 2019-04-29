@@ -6,7 +6,6 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.LinearLayout;
@@ -14,6 +13,7 @@ import android.widget.LinearLayout;
 import com.zhu.leftalongwithrightrecyclerview.httpbean.HostMenuBean;
 import com.zhu.leftalongwithrightrecyclerview.httpbean.HttpResponseBean;
 import com.zhu.leftalongwithrightrecyclerview.httpbean.SubMenuBean;
+import com.zhu.leftalongwithrightrecyclerview.rv.ItemHeaderDecoration;
 import com.zhu.leftalongwithrightrecyclerview.rv.RecyclerViewAdapter;
 import com.zhu.leftalongwithrightrecyclerview.rv.RightDetailRVAdapter;
 import com.zhu.leftalongwithrightrecyclerview.rv.RightMenuBean;
@@ -40,6 +40,7 @@ public class DoubleLinkedRecyclerView extends LinearLayout {
     private RightDetailRVAdapter mSubAdapter;
     private GridLayoutManager mSubGridLayoutManagerSub;
     private LinearLayoutManager mHostLinearLayoutManager;
+    private ItemHeaderDecoration mItemHeaderDecoration;
 
     public DoubleLinkedRecyclerView(Context context) {
         super(context);
@@ -105,6 +106,8 @@ public class DoubleLinkedRecyclerView extends LinearLayout {
                 }
             }
         });
+        mItemHeaderDecoration = new ItemHeaderDecoration(mContext, new ArrayList<RightMenuBean>());
+        mRecyclerViewSub.addItemDecoration(mItemHeaderDecoration);
     }
 
     private void initHostRecyclerView() {
@@ -159,6 +162,7 @@ public class DoubleLinkedRecyclerView extends LinearLayout {
 
         List<RightMenuBean> subMenuBean = getSubMenuBean(responseBean);
         mSubAdapter.setNewData(subMenuBean);
+        mItemHeaderDecoration.setData(subMenuBean);
     }
 
     @NotNull
@@ -178,12 +182,14 @@ public class DoubleLinkedRecyclerView extends LinearLayout {
             RightMenuBean rightMenuBeanHead = new RightMenuBean();
             rightMenuBeanHead.setTitle(true);
             rightMenuBeanHead.setName(hostMenuBeans.get(i).getName());
+            rightMenuBeanHead.setTitleName(hostMenuBeans.get(i).getName());
             subMenuBeans.add(rightMenuBeanHead);
             List<SubMenuBean> categoryTwoArray = hostMenuBeans.get(i).getCategoryTwoArray();
             for (int j = 0; j < categoryTwoArray.size(); j++) {
                 RightMenuBean rightMenuBeanContent = new RightMenuBean();
                 rightMenuBeanContent.setTitle(false);
                 rightMenuBeanContent.setName(categoryTwoArray.get(j).getName());
+                rightMenuBeanContent.setTitleName(hostMenuBeans.get(i).getName());
                 subMenuBeans.add(rightMenuBeanContent);
             }
         }
