@@ -1,10 +1,12 @@
 package com.zhu.leftalongwithrightrecyclerview;
 
 import android.content.Context;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.widget.LinearLayout;
 
 import com.zhu.leftalongwithrightrecyclerview.httpbean.HostMenuBean;
@@ -13,6 +15,7 @@ import com.zhu.leftalongwithrightrecyclerview.httpbean.SubMenuBean;
 import com.zhu.leftalongwithrightrecyclerview.rv.RecyclerViewAdapter;
 import com.zhu.leftalongwithrightrecyclerview.rv.RightDetailRVAdapter;
 import com.zhu.leftalongwithrightrecyclerview.rv.RightMenuBean;
+import com.zhu.leftalongwithrightrecyclerview.rv.RvItemOnSelectedListener;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -27,7 +30,8 @@ public class DoubleLinkedRecylcerView extends LinearLayout {
     private RecyclerView mRecyclerViewSub;
     private RecyclerViewAdapter mHostAdapter;
     private RightDetailRVAdapter mSubAdapter;
-    private LinearLayoutManager mLinearLayoutManagerSub;
+    private GridLayoutManager mSubGridLayoutManagerSub;
+    private LinearLayoutManager mHostLinearLayoutManager;
 
     public DoubleLinkedRecylcerView(Context context) {
         super(context);
@@ -53,7 +57,7 @@ public class DoubleLinkedRecylcerView extends LinearLayout {
         init();
     }
 
-    private  void init() {
+    private void init() {
         LayoutInflater.from(getContext()).inflate(R.layout.double_rv_layout, this, true);
 
         initHostRecyclerView();
@@ -64,18 +68,50 @@ public class DoubleLinkedRecylcerView extends LinearLayout {
         mRecyclerViewSub = findViewById(R.id.rv_right);
         mSubAdapter = new RightDetailRVAdapter(R.layout.rv_item);
         mRecyclerViewSub.setAdapter(mSubAdapter);
-        mLinearLayoutManagerSub = new LinearLayoutManager(mContext);
-        mRecyclerViewSub.setLayoutManager(mLinearLayoutManagerSub);
+        mSubGridLayoutManagerSub = new GridLayoutManager(mContext, 1);
+        mRecyclerViewSub.setLayoutManager(mSubGridLayoutManagerSub);
     }
 
     private void initHostRecyclerView() {
         mRecyclerViewHost = findViewById(R.id.rv_left);
-        mHostAdapter = new RecyclerViewAdapter(R.layout.rv_item, this);
+        mHostAdapter = new RecyclerViewAdapter(R.layout.rv_item, new RvItemOnSelectedListener() {
+            @Override
+            public void onSelected(int position) {
+                if (mRecyclerViewSub != null) {
+                    setChecked(position);
+                }
+            }
+        });
         mRecyclerViewHost.setAdapter(mHostAdapter);
-        LinearLayoutManager linearLayoutManagerLeft = new LinearLayoutManager(mContext);
-        mRecyclerViewHost.setLayoutManager(linearLayoutManagerLeft);
+        mHostLinearLayoutManager = new LinearLayoutManager(mContext);
+        mRecyclerViewHost.setLayoutManager(mHostLinearLayoutManager);
     }
 
+
+    private void setChecked(int position) {
+        mHostAdapter.setCheckedPosition(position);
+        mHostAdapter.notifyDataSetChanged();
+        scrollSubMenu(getCountMoving(position));
+        moveToCenter(position);
+    }
+
+    private int getCountMoving(int position) {
+        int count = 0;
+        for (int i = 0; i < position; i++) {
+            count += mHttpResponseBean.getCategoryOneArray().get(i).getCategoryTwoArray().size();
+        }
+        count += position;
+        return count;
+    }
+
+    private void moveToCenter(int position) {
+        //将点击的position转换为当前屏幕上可见的item的位置以便于计算距离顶部的高度，从而进行移动居中
+        View childAt = mRecyclerViewHost.getChildAt(position - mHostLinearLayoutManager.findFirstVisibleItemPosition());
+        if (childAt != null) {
+            int y = (childAt.getTop() - mRecyclerViewHost.getHeight() / 2);
+            mRecyclerViewHost.smoothScrollBy(0, y);
+        }
+    }
 
     private HttpResponseBean mHttpResponseBean;
 
@@ -120,20 +156,14 @@ public class DoubleLinkedRecylcerView extends LinearLayout {
 
 
     public void scrollSubMenu(int position) {
-        int count = 0;
-        for (int i = 0; i < position; i++) {
-            count += mHttpResponseBean.getCategoryOneArray().get(i).getCategoryTwoArray().size();
-        }
-        count += position;
-
         mRecyclerViewSub.stopScroll();
-        smoothMoveToPosition(count);
+        smoothMoveToPosition(position);
     }
 
 
     private void smoothMoveToPosition(int n) {
-        int firstItem = mLinearLayoutManagerSub.findFirstVisibleItemPosition();
-        int lastItem = mLinearLayoutManagerSub.findLastVisibleItemPosition();
+        int firstItem = mSubGridLayoutManagerSub.findFirstVisibleItemPosition();
+        int lastItem = mSubGridLayoutManagerSub.findLastVisibleItemPosition();
         if (n <= firstItem) {
             mRecyclerViewSub.scrollToPosition(n);
         } else if (n <= lastItem) {
