@@ -26,6 +26,8 @@ public class DoubleLinkedRecyclerView extends LinearLayout {
 
     private Context mContext;
 
+    private HttpResponseBean mHttpResponseBean;
+
     private RecyclerView mRecyclerViewHost;
     private RecyclerView mRecyclerViewSub;
     private RecyclerViewAdapter mHostAdapter;
@@ -114,8 +116,6 @@ public class DoubleLinkedRecyclerView extends LinearLayout {
             mRecyclerViewHost.smoothScrollBy(0, y);
         }
     }
-
-    private HttpResponseBean mHttpResponseBean;
 
     public void setData(HttpResponseBean responseBean) {
         mHttpResponseBean = responseBean;
