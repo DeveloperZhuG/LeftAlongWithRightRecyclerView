@@ -137,7 +137,7 @@ public class DoubleLinkedRecyclerView extends LinearLayout {
                     mIsRvHostMoving = true;
                     targetPosition = position;
                     setHostMenuItemChecked(position);
-                    ItemHeaderDecoration.setCurrentTag(String.valueOf(targetPosition));//凡是点击左边，将左边点击的位置作为当前的tag
+                    ItemHeaderDecoration.setCurrentTag(String.valueOf(targetPosition));
                 }
             }
         });
