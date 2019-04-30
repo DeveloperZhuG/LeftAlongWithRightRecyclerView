@@ -7,12 +7,12 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.widget.LinearLayout;
 
 import com.zhu.leftalongwithrightrecyclerview.httpbean.HostMenuBean;
 import com.zhu.leftalongwithrightrecyclerview.httpbean.HttpResponseBean;
 import com.zhu.leftalongwithrightrecyclerview.httpbean.SubMenuBean;
+import com.zhu.leftalongwithrightrecyclerview.rv.HostRvChangeListener;
 import com.zhu.leftalongwithrightrecyclerview.rv.ItemHeaderDecoration;
 import com.zhu.leftalongwithrightrecyclerview.rv.RecyclerViewAdapter;
 import com.zhu.leftalongwithrightrecyclerview.rv.RightDetailRVAdapter;
@@ -32,6 +32,8 @@ public class DoubleLinkedRecyclerView extends LinearLayout {
 
     private boolean mIsRvHostMoving = false;
 
+    private boolean mIsRvSubMoving = false;
+
     private int mRvSubCountMoving = 0;
 
     private RecyclerView mRecyclerViewHost;
@@ -41,6 +43,7 @@ public class DoubleLinkedRecyclerView extends LinearLayout {
     private GridLayoutManager mSubGridLayoutManagerSub;
     private LinearLayoutManager mHostLinearLayoutManager;
     private ItemHeaderDecoration mItemHeaderDecoration;
+    private int targetPosition;
 
     public DoubleLinkedRecyclerView(Context context) {
         super(context);
@@ -83,8 +86,8 @@ public class DoubleLinkedRecyclerView extends LinearLayout {
             @Override
             public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
-                if (mIsRvHostMoving && newState == RecyclerView.SCROLL_STATE_IDLE) {
-                    mIsRvHostMoving = false;
+                if (mIsRvSubMoving && newState == RecyclerView.SCROLL_STATE_IDLE) {
+                    mIsRvSubMoving = false;
                     int n = mRvSubCountMoving - mSubGridLayoutManagerSub.findFirstVisibleItemPosition();
                     if (0 <= n && n < mRecyclerViewSub.getChildCount()) {
                         int top = mRecyclerViewSub.getChildAt(n).getTop();
@@ -96,8 +99,8 @@ public class DoubleLinkedRecyclerView extends LinearLayout {
             @Override
             public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
-                if (mIsRvHostMoving) {
-                    mIsRvHostMoving = false;
+                if (mIsRvSubMoving) {
+                    mIsRvSubMoving = false;
                     int n = mRvSubCountMoving - mSubGridLayoutManagerSub.findFirstVisibleItemPosition();
                     if (0 <= n && n < mRecyclerViewSub.getChildCount()) {
                         int top = mRecyclerViewSub.getChildAt(n).getTop();
@@ -108,6 +111,21 @@ public class DoubleLinkedRecyclerView extends LinearLayout {
         });
         mItemHeaderDecoration = new ItemHeaderDecoration(mContext, new ArrayList<RightMenuBean>());
         mRecyclerViewSub.addItemDecoration(mItemHeaderDecoration);
+
+        mItemHeaderDecoration.setCheckListener(new HostRvChangeListener() {
+            @Override
+            public void onHostItemSelectChange(int position) {
+                if (mRecyclerViewSub != null) {
+                    if (mIsRvHostMoving) {
+                        mIsRvHostMoving = false;
+                    } else {
+                        mHostAdapter.setCheckedPosition(position);
+                        mHostAdapter.notifyDataSetChanged();
+                    }
+                    ItemHeaderDecoration.setCurrentTag(String.valueOf(position));
+                }
+            }
+        });
     }
 
     private void initHostRecyclerView() {
@@ -116,7 +134,10 @@ public class DoubleLinkedRecyclerView extends LinearLayout {
             @Override
             public void onSelected(int position) {
                 if (mRecyclerViewSub != null) {
+                    mIsRvHostMoving = true;
+                    targetPosition = position;
                     setHostMenuItemChecked(position);
+                    ItemHeaderDecoration.setCurrentTag(String.valueOf(targetPosition));//凡是点击左边，将左边点击的位置作为当前的tag
                 }
             }
         });
@@ -125,15 +146,12 @@ public class DoubleLinkedRecyclerView extends LinearLayout {
         mRecyclerViewHost.setLayoutManager(mHostLinearLayoutManager);
     }
 
-
     private void setHostMenuItemChecked(int position) {
         mHostAdapter.setCheckedPosition(position);
         mHostAdapter.notifyDataSetChanged();
 
         mRvSubCountMoving = getCountMoving(position);
         scrollSubMenu(mRvSubCountMoving);
-
-        moveToCenter(position);
     }
 
     private int getCountMoving(int position) {
@@ -143,15 +161,6 @@ public class DoubleLinkedRecyclerView extends LinearLayout {
         }
         count += position;
         return count;
-    }
-
-    private void moveToCenter(int position) {
-        //将点击的position转换为当前屏幕上可见的item的位置以便于计算距离顶部的高度，从而进行移动居中
-        View childAt = mRecyclerViewHost.getChildAt(position - mHostLinearLayoutManager.findFirstVisibleItemPosition());
-        if (childAt != null) {
-            int y = (childAt.getTop() - mRecyclerViewHost.getHeight() / 2);
-            mRecyclerViewHost.smoothScrollBy(0, y);
-        }
     }
 
     public void setData(HttpResponseBean responseBean) {
@@ -183,6 +192,7 @@ public class DoubleLinkedRecyclerView extends LinearLayout {
             rightMenuBeanHead.setTitle(true);
             rightMenuBeanHead.setName(hostMenuBeans.get(i).getName());
             rightMenuBeanHead.setTitleName(hostMenuBeans.get(i).getName());
+            rightMenuBeanHead.setTag(String.valueOf(i));
             subMenuBeans.add(rightMenuBeanHead);
             List<SubMenuBean> categoryTwoArray = hostMenuBeans.get(i).getCategoryTwoArray();
             for (int j = 0; j < categoryTwoArray.size(); j++) {
@@ -190,6 +200,7 @@ public class DoubleLinkedRecyclerView extends LinearLayout {
                 rightMenuBeanContent.setTitle(false);
                 rightMenuBeanContent.setName(categoryTwoArray.get(j).getName());
                 rightMenuBeanContent.setTitleName(hostMenuBeans.get(i).getName());
+                rightMenuBeanContent.setTag(String.valueOf(i));
                 subMenuBeans.add(rightMenuBeanContent);
             }
         }
@@ -214,7 +225,7 @@ public class DoubleLinkedRecyclerView extends LinearLayout {
             mRecyclerViewSub.scrollBy(0, top);
         } else {
             mRecyclerViewSub.scrollToPosition(n);
-            mIsRvHostMoving = true;
+            mIsRvSubMoving = true;
         }
     }
 }

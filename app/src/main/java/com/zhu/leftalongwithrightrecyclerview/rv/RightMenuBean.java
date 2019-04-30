@@ -8,6 +8,19 @@ public class RightMenuBean {
     private String name;
     private String titleName;
     private boolean isTitle;
+    private String tag;
+
+    public String getTag() {
+        return tag;
+    }
+
+    /**
+     *
+     * @param tag 其宿主（左侧的 item） 在宿主集合中的 index;
+     */
+    public void setTag(String tag) {
+        this.tag = tag;
+    }
 
     public String getTitleName() {
         return titleName;

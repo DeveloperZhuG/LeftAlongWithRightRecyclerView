@@ -3,8 +3,10 @@ package com.zhu.leftalongwithrightrecyclerview.rv;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,6 +21,18 @@ public class ItemHeaderDecoration extends RecyclerView.ItemDecoration {
     private int mTitleHeight;
     private List<RightMenuBean> mDatas;
     private LayoutInflater mInflater;
+
+    public static String currentTag = "0";//标记当前左侧选中的position，因为有可能选中的item，右侧不能置顶，所以强制替换掉当前的tag
+    private HostRvChangeListener mCheckListener;
+
+
+    public void setCheckListener(HostRvChangeListener checkListener) {
+        mCheckListener = checkListener;
+    }
+
+    public static void setCurrentTag(String currentTag) {
+        ItemHeaderDecoration.currentTag = currentTag;
+    }
 
     public ItemHeaderDecoration(Context context, List<RightMenuBean> datas) {
         this.mDatas = datas;
@@ -38,12 +52,22 @@ public class ItemHeaderDecoration extends RecyclerView.ItemDecoration {
     }
 
     @Override
-    public void onDrawOver(Canvas canvas, final RecyclerView parent, RecyclerView.State state) {
+    public void onDrawOver(@NonNull Canvas canvas, @NonNull final RecyclerView parent, @NonNull RecyclerView.State state) {
         if (mDatas.isEmpty()) {
             return;
         }
         int pos = ((LinearLayoutManager) (parent.getLayoutManager())).findFirstVisibleItemPosition();
         drawHeader(parent, pos, canvas);
+
+        checkHostItem(pos);
+    }
+
+    private void checkHostItem(int pos) {
+        String tag = mDatas.get(pos).getTag();
+        if (!TextUtils.equals(tag, currentTag)) {
+            currentTag = tag;
+            mCheckListener.onHostItemSelectChange(Integer.valueOf(tag));
+        }
     }
 
     /**
