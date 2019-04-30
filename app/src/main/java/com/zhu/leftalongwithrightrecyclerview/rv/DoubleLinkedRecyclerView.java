@@ -1,4 +1,4 @@
-package com.zhu.leftalongwithrightrecyclerview;
+package com.zhu.leftalongwithrightrecyclerview.rv;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
@@ -9,14 +9,15 @@ import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.widget.LinearLayout;
 
+import com.zhu.leftalongwithrightrecyclerview.R;
 import com.zhu.leftalongwithrightrecyclerview.httpbean.HostMenuBean;
 import com.zhu.leftalongwithrightrecyclerview.httpbean.HttpResponseBean;
 import com.zhu.leftalongwithrightrecyclerview.httpbean.SubMenuBean;
-import com.zhu.leftalongwithrightrecyclerview.rv.HostRvChangeListener;
-import com.zhu.leftalongwithrightrecyclerview.rv.ItemHeaderDecoration;
-import com.zhu.leftalongwithrightrecyclerview.rv.RecyclerViewAdapter;
-import com.zhu.leftalongwithrightrecyclerview.rv.RightDetailRVAdapter;
-import com.zhu.leftalongwithrightrecyclerview.rv.RightMenuBean;
+import com.zhu.leftalongwithrightrecyclerview.rv.host.HostRvChangeListener;
+import com.zhu.leftalongwithrightrecyclerview.rv.sub.ItemHeaderDecoration;
+import com.zhu.leftalongwithrightrecyclerview.rv.host.RecyclerViewAdapter;
+import com.zhu.leftalongwithrightrecyclerview.rv.sub.RightDetailRVAdapter;
+import com.zhu.leftalongwithrightrecyclerview.rv.sub.RightMenuBean;
 import com.zhu.leftalongwithrightrecyclerview.rv.RvItemOnSelectedListener;
 
 import org.jetbrains.annotations.NotNull;

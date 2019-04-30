@@ -6,6 +6,7 @@ import android.util.Log;
 
 import com.google.gson.Gson;
 import com.zhu.leftalongwithrightrecyclerview.httpbean.HttpResponseBean;
+import com.zhu.leftalongwithrightrecyclerview.rv.DoubleLinkedRecyclerView;
 
 import java.io.IOException;
 import java.io.InputStream;

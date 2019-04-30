@@ -1,9 +1,11 @@
-package com.zhu.leftalongwithrightrecyclerview.rv;
+package com.zhu.leftalongwithrightrecyclerview.rv.host;
 
 import android.graphics.Color;
 import android.util.Log;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
+import com.zhu.leftalongwithrightrecyclerview.rv.RvItemOnSelectedListener;
+import com.zhu.leftalongwithrightrecyclerview.rv.TextViewHolder;
 
 public class RecyclerViewAdapter extends BaseQuickAdapter<String, TextViewHolder> {
 

@@ -1,4 +1,4 @@
-package com.zhu.leftalongwithrightrecyclerview.rv;
+package com.zhu.leftalongwithrightrecyclerview.rv.sub;
 
 import android.content.Context;
 import android.graphics.Canvas;
@@ -14,6 +14,8 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.zhu.leftalongwithrightrecyclerview.R;
+import com.zhu.leftalongwithrightrecyclerview.rv.host.HostRvChangeListener;
+
 import java.util.List;
 
 

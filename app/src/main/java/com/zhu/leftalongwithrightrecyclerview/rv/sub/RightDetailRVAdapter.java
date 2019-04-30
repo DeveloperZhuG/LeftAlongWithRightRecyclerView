@@ -1,9 +1,10 @@
-package com.zhu.leftalongwithrightrecyclerview.rv;
+package com.zhu.leftalongwithrightrecyclerview.rv.sub;
 
 import android.graphics.Color;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.zhu.leftalongwithrightrecyclerview.R;
+import com.zhu.leftalongwithrightrecyclerview.rv.TextViewHolder;
 
 public class RightDetailRVAdapter extends BaseQuickAdapter<RightMenuBean, TextViewHolder> {
 

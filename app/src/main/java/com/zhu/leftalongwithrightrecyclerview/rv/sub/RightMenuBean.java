@@ -1,4 +1,4 @@
-package com.zhu.leftalongwithrightrecyclerview.rv;
+package com.zhu.leftalongwithrightrecyclerview.rv.sub;
 
 /**
  *  本地右侧每个item对象.
