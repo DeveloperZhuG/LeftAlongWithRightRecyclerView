@@ -78,37 +78,42 @@ public class ItemHeaderDecoration extends RecyclerView.ItemDecoration {
         View topTitleView = mInflater.inflate(R.layout.rv_item, parent, false);
         TextView tvTitle = topTitleView.findViewById(R.id.tv_menu);
         tvTitle.setText(mDatas.get(pos).getTitleName());
+
         //绘制title开始
         int toDrawWidthSpec;//用于测量的widthMeasureSpec
         int toDrawHeightSpec;//用于测量的heightMeasureSpec
         RecyclerView.LayoutParams lp = (RecyclerView.LayoutParams) topTitleView.getLayoutParams();
         if (lp == null) {
             lp = new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);//这里是根据复杂布局layout的width height，new一个Lp
-            topTitleView.setLayoutParams(lp);
         }
+
         topTitleView.setLayoutParams(lp);
-        if (lp.width == ViewGroup.LayoutParams.MATCH_PARENT) {
-            //如果是MATCH_PARENT，则用父控件能分配的最大宽度和EXACTLY构建MeasureSpec
-            toDrawWidthSpec = View.MeasureSpec.makeMeasureSpec(parent.getWidth() - parent.getPaddingLeft() - parent.getPaddingRight(), View.MeasureSpec.EXACTLY);
-        } else if (lp.width == ViewGroup.LayoutParams.WRAP_CONTENT) {
-            //如果是WRAP_CONTENT，则用父控件能分配的最大宽度和AT_MOST构建MeasureSpec
-            toDrawWidthSpec = View.MeasureSpec.makeMeasureSpec(parent.getWidth() - parent.getPaddingLeft() - parent.getPaddingRight(), View.MeasureSpec.AT_MOST);
-        } else {
-            //否则则是具体的宽度数值，则用这个宽度和EXACTLY构建MeasureSpec
-            toDrawWidthSpec = View.MeasureSpec.makeMeasureSpec(lp.width, View.MeasureSpec.EXACTLY);
-        }
-        //高度同理
-        if (lp.height == ViewGroup.LayoutParams.MATCH_PARENT) {
-            toDrawHeightSpec = View.MeasureSpec.makeMeasureSpec(parent.getHeight() - parent.getPaddingTop() - parent.getPaddingBottom(), View.MeasureSpec.EXACTLY);
-        } else if (lp.height == ViewGroup.LayoutParams.WRAP_CONTENT) {
-            toDrawHeightSpec = View.MeasureSpec.makeMeasureSpec(parent.getHeight() - parent.getPaddingTop() - parent.getPaddingBottom(), View.MeasureSpec.AT_MOST);
-        } else {
-            toDrawHeightSpec = View.MeasureSpec.makeMeasureSpec(mTitleHeight, View.MeasureSpec.EXACTLY);
-        }
+        toDrawWidthSpec = getMeasuredSpec(parent, lp.width);
+        toDrawHeightSpec = getMeasuredSpec(parent, lp.height);
+        performProcessDisplay(parent, canvas, topTitleView, toDrawWidthSpec, toDrawHeightSpec);
+
+    }
+
+    private void performProcessDisplay(RecyclerView parent, Canvas canvas, View topTitleView, int toDrawWidthSpec, int toDrawHeightSpec) {
         //依次调用 measure,layout,draw方法，将复杂头部显示在屏幕上
         topTitleView.measure(toDrawWidthSpec, toDrawHeightSpec);
         topTitleView.layout(parent.getPaddingLeft(), parent.getPaddingTop(), parent.getPaddingLeft() + topTitleView.getMeasuredWidth(), parent.getPaddingTop() + topTitleView.getMeasuredHeight());
         topTitleView.draw(canvas);//Canvas默认在视图顶部，无需平移，直接绘制
         //绘制title结束
+    }
+
+    private int getMeasuredSpec(RecyclerView parent, int widthOrHeight) {
+        int toDrawWidthSpec;
+        if (widthOrHeight == ViewGroup.LayoutParams.MATCH_PARENT) {
+            //如果是MATCH_PARENT，则用父控件能分配的最大宽度和EXACTLY构建MeasureSpec
+            toDrawWidthSpec = View.MeasureSpec.makeMeasureSpec(parent.getWidth() - parent.getPaddingLeft() - parent.getPaddingRight(), View.MeasureSpec.EXACTLY);
+        } else if (widthOrHeight == ViewGroup.LayoutParams.WRAP_CONTENT) {
+            //如果是WRAP_CONTENT，则用父控件能分配的最大宽度和AT_MOST构建MeasureSpec
+            toDrawWidthSpec = View.MeasureSpec.makeMeasureSpec(parent.getWidth() - parent.getPaddingLeft() - parent.getPaddingRight(), View.MeasureSpec.AT_MOST);
+        } else {
+            //否则则是具体的宽度数值，则用这个宽度和EXACTLY构建MeasureSpec
+            toDrawWidthSpec = View.MeasureSpec.makeMeasureSpec(widthOrHeight, View.MeasureSpec.EXACTLY);
+        }
+        return toDrawWidthSpec;
     }
 }
