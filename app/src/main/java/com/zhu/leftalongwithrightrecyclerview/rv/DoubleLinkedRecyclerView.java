@@ -7,6 +7,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 
 import com.zhu.leftalongwithrightrecyclerview.R;
@@ -25,7 +26,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DoubleLinkedRecyclerView extends LinearLayout {
+public class DoubleLinkedRecyclerView extends FrameLayout {
 
     private Context mContext;
 
